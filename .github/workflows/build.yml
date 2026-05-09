@@ -1,0 +1,34 @@
+name: Build APK
+on:
+  push:
+    branches: [principal]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install and build
+        run: |
+          npm install -g @capacitor/cli
+          npm init -y
+          npm install @capacitor/core @capacitor/android
+          npx cap init "AbsoluteSolver" "com.absolute.solver" --web-dir .
+          npx cap add android
+          cp "Solución absoluta.html" index.html
+          npx cap sync android
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+      - uses: actions/upload-artifact@v3
+        with:
+          name: absolute-solver-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
