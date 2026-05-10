@@ -20,7 +20,7 @@ jobs:
       - name: Preparar proyecto
         run: |
           mkdir www
-          cp "Solución absoluta.html" www/index.html
+          cp "Absolute-solber.html" www/index.html
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
 
