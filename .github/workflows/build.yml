@@ -8,24 +8,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
       - uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 11
-
       - name: Preparar proyecto
         run: |
-          mkdir www
+          mkdir -p www
           cp "Absolute-solber.html" www/index.html
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
-
-      - name: Inicializar Capacitor
-        run: |
           npx cap init "AbsoluteSolver" "com.absolute.solver" --web-dir www
           npx cap add android
           npx cap sync android
@@ -34,7 +31,8 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon -Dorg.gradle.jvmargs="-Xmx1g"
+          export JAVA_HOME=$JAVA_HOME_17_X64
+          ./gradlew assembleDebug --no-daemon
 
       - uses: actions/upload-artifact@v4
         with:
