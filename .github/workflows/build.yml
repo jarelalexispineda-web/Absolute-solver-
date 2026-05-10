@@ -6,28 +6,36 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - name: Install and build
-        run: |
-          npm install -g @capacitor/cli
-          npm init -y
-          npm install @capacitor/core @capacitor/android
-          npx cap init "AbsoluteSolver" "com.absolute.solver" --web-dir .
-          npx cap add android
-          cp "Solución absoluta.html" index.html
-          npx cap sync android
-      - uses: actions/setup-java@v3
+
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
-      - name: Build APK
+
+      - name: Preparar proyecto
+        run: |
+          mkdir www
+          cp "Solución absoluta.html" www/index.html
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+
+      - name: Inicializar Capacitor
+        run: |
+          npx cap init "AbsoluteSolver" "com.absolute.solver" --web-dir www
+          npx cap add android
+          npx cap sync android
+
+      - name: Compilar APK
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
+
       - uses: actions/upload-artifact@v4
         with:
           name: absolute-solver-apk
